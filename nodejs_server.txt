@@ -1,0 +1,106 @@
+const express = require('express')
+const cors = require('cors')
+const { MongoClient } = require('mongodb');
+const ObjectId=require('mongodb').ObjectId
+const app = express()
+const port = 5000
+
+
+const uri = "mongodb+srv://concept1:BMsRlv5N2wczeIVu@cluster0.6azwl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+
+
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+client.connect(err => {
+    const userscollection = client.db("RandomUsers").collection("users");
+    // perform actions on the collection object
+    // client.close();
+
+    
+   app.post('/addUser',async (req,res)=>{
+       
+    const result = await userscollection.insertOne(req.body);
+    res.send(result);
+   })
+
+
+   app.get('/allusers',async(req,res)=>{
+
+    const result = await userscollection.find({}).toArray();
+    res.send(result);
+   })
+
+
+   app.delete('/deleteuser/:id',async(req,res)=>{
+       
+         const id = req.params.id;
+         const result =await userscollection.deleteOne({_id:ObjectId(id)})
+         res.send(result);
+   })
+
+
+
+
+  });
+
+app.use(cors())
+app.use(express.json());
+
+const users =[
+    {
+        id : 0,
+        name:'mim',
+        roll:'150132',
+        dist:'rajhsshi'
+    },
+    {
+        id : 1,
+        name:'hakkani',
+        roll:'150125',
+        dist:'jamira'
+    },
+    {
+        id : 3,
+        name:'junaid',
+        roll:'150131',
+        dist:'puthia'
+    },
+    {
+        id : 4,
+        name:'junaid',
+        roll:'150131',
+        dist:'puthia'
+    },
+    {
+        id : 5,
+        name:'junaid',
+        roll:'1501391',
+        dist:'ppp'
+    },
+    {
+        id : 2,
+        name:'junaidi',
+        roll:'150131',
+        dist:'iia'
+    }
+]
+
+app.get('/users/:id',(req,res)=>{
+
+    res.send(users[req.params.id]);
+    
+})
+
+
+app.get('/users',(req,res)=>{
+  
+    res.send(users)
+})
+
+app.get('/', (req, res) => {
+  res.send('Hello World! the new mim vai')
+});
+
+app.listen(port, () => {
+  console.log(`Running Server on the Port:${port}`)
+});
